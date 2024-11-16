@@ -111,9 +111,6 @@ with dpg.viewport_menu_bar():
         dpg.add_menu_item(label="Save", callback=save_list)
         dpg.add_menu_item(label="Load a to-do list", callback=load_list)
 
-    with dpg.menu(label="Settings"):
-        dpg.add_menu_item(label="Change color theme", callback=change_color)
-
 with dpg.window(label="Listit", tag="main", width=600, height=600):
     global nums
     dpg.add_text("Listit: Your own to-do list.\n\nIf you can list it, you can do it.\n")

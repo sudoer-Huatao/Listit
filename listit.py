@@ -5,19 +5,22 @@ dpg.create_viewport(title="Listit", width=600, height=600)
 num = 0  # Number of to-dos.
 example_tasks = [
     "Write some code",
-    "Do my homework",
+    "Finish homework",
     "Read a good book",
     "Do my chores",
     "Read the daily news",
-    "Play my favorite video game",
+    "Play a video game",
     "Go to the movies",
     "Buy Mom a gift",
+    "Practice music instruments",
 ]
+fonts = ["Aptos-Display.ttf", "ProggyClean.otf"]
 tasks = {}  # List for storing tasks
 task = 0
 
 
 def make_new(todo: str, done: bool):
+    # Make a new todo
     global task, num, nums
     num += 1
     with dpg.group(tag=str(num), horizontal=True, parent="main"):
@@ -62,6 +65,7 @@ def make_new(todo: str, done: bool):
 
 
 def remove_row(user_data: str):
+    # Remove a todo
     global num, nums
     num -= 1
     dpg.delete_item(nums)
@@ -70,15 +74,21 @@ def remove_row(user_data: str):
 
 
 def store_task(user_data: str):
+    # Store to-do in dict
     tasks[int(user_data.lstrip("todo"))] = [dpg.get_value(user_data), False]
 
 
 def store_done(user_data: str):
+    # Update whether todo is done in dict
     user_data = int(user_data.lstrip("done"))
-    (tasks[user_data])[1] = not ((tasks[user_data])[1])  # Reverse done/not done
+    try:
+        (tasks[user_data])[1] = not ((tasks[user_data])[1])  # Reverse done/not done
+    except KeyError:
+        print("Warning: No todo to check!")
 
 
 def save_list():
+    # Save to-dos into file
     f = open("tasks.txt", "w")
     f.seek(0)
     f.truncate()
@@ -88,6 +98,7 @@ def save_list():
 
 
 def load_list():
+    # Load to-do list
     global num
 
     f = open("tasks.txt", "r")
@@ -104,8 +115,50 @@ def load_list():
 
 
 def change_color():
-    pass
+    dpg.show_style_editor()
 
+
+def change_font():
+    dpg.show_font_manager()
+
+
+with dpg.theme() as global_theme:  # Color themes
+    with dpg.theme_component(dpg.mvAll):
+        dpg.add_theme_color(
+            dpg.mvThemeCol_WindowBg, (200, 200, 50), category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_style(
+            dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_color(
+            dpg.mvThemeCol_Text, (10, 10, 10), category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_color(
+            dpg.mvThemeCol_MenuBarBg, (220, 170, 0), category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_color(
+            dpg.mvThemeCol_TitleBg, (220, 170, 0), category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_style(
+            dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_color(
+            dpg.mvThemeCol_Button, (220, 190, 0), category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_color(
+            dpg.mvThemeCol_CheckMark, (220, 170, 0), category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_color(
+            dpg.mvThemeCol_FrameBg, (230, 200, 0), category=dpg.mvThemeCat_Core
+        )
+        dpg.add_theme_color(
+            dpg.mvThemeCol_PopupBg, (220, 170, 0), category=dpg.mvThemeCat_Core
+        )
+
+dpg.bind_theme(global_theme)
+
+with dpg.font_registry():  # Default font is Sans
+    dpg.add_font("Aptos-Display.ttf", 20)
 
 with dpg.viewport_menu_bar():
     with dpg.menu(label="My Todo-list"):
@@ -113,6 +166,7 @@ with dpg.viewport_menu_bar():
         dpg.add_menu_item(label="Load a to-do list", callback=load_list)
 
     with dpg.menu(label="Settings"):
+        dpg.add_menu_item(label="Change font", callback=change_font)
         dpg.add_menu_item(label="Change color theme", callback=change_color)
 
 with dpg.window(label="Listit", tag="main", width=600, height=600):
@@ -121,6 +175,8 @@ with dpg.window(label="Listit", tag="main", width=600, height=600):
     dpg.add_button(label="Add new to-do", callback=make_new, tag="add")
     nums = dpg.add_text("Number of to-do's: " + str(num), before="add")
 
+dpg.set_viewport_large_icon("icon.ico")
+dpg.set_viewport_small_icon("icon.ico")
 
 dpg.setup_dearpygui()
 dpg.show_viewport()
